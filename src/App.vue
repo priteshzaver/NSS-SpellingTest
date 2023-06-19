@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import spellingData from './spellingData'
 import SpeechUtterance from './components/SpeechUtterance.vue'
+import SpellingScore from './components/SpellingScore.vue'
 
 const spellingWords = ref([...spellingData])
 const currentIndex = ref(0)
@@ -13,17 +14,27 @@ const handleSubmit = () => {
   currentIndex.value++
   userAnswer.value = ''
 }
+
+const testFinished = computed(() => {
+  return currentIndex.value >= spellingWords.value.length
+})
 </script>
 
 <template>
-  <h1>Spelling Test</h1>
   <div>
-    <SpeechUtterance :word="spellingWords[currentIndex].word" />
+    <h1>Spelling Test</h1>
+    <div v-if="!testFinished">
+      <div>Word {{ currentIndex + 1 }} of {{ spellingWords.length }}</div>
+      <SpeechUtterance :word="spellingWords[currentIndex].word" />
+      <form @submit.prevent="handleSubmit">
+        <input v-model="userAnswer" type="text" spellcheck="false" />
+        <button>Submit</button>
+      </form>
+    </div>
+    <div v-else>
+      <SpellingScore v-if="testFinished" :spellingWords="spellingWords" />
+    </div>
   </div>
-  <form @submit.prevent="handleSubmit">
-    <input v-model="userAnswer" type="text" spellcheck="false" />
-    <button>Submit</button>
-  </form>
 </template>
 
 <style scoped></style>
