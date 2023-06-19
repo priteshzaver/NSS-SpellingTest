@@ -1,10 +1,14 @@
 <script setup>
+import { watch } from 'vue'
+
 const props = defineProps(['word'])
 
 const sayWord = () => {
   const utterance = new SpeechSynthesisUtterance(props.word)
   return speechSynthesis.speak(utterance)
 }
+
+watch(() => props.word, sayWord)
 </script>
 
 <template>
